@@ -7,6 +7,9 @@
 #include <prsht.h>
 #include <gpedit.h> // Requires prsht.h first; not unused
 #include <stdbool.h>
+#include <curl/curl.h>
+#include <Knownfolders.h>
+#include <shlobj_core.h>
 
 extern const CLSID _CLSID_GroupPolicyObject;
 extern const IID _IID_IGroupPolicyObject;
@@ -16,7 +19,6 @@ extern GUID RegistryID;
 extern IGroupPolicyObject *pGPO;
 extern HKEY hKey;
 extern HKEY hSubKey;
-extern LONG result;
 
 typedef struct {
   char *string;
@@ -46,5 +48,9 @@ void restorepoint_prep();
 int create_restore_point();
 int gp_edits();
 wchar_t *get_log_directory();
+PWSTR get_windows_path();
+int disable_sleep();
+HRESULT init_gp_object();
+int install_appx_support();
 
 #endif // COMMON_H

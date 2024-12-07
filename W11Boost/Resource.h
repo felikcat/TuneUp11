@@ -12,6 +12,8 @@
 #define IDC_CREATE_RESTORE_POINT        201
 #define IDC_PRIVACY_MODE                202
 #define IDC_INSTALL_MICROSOFT_STORE     203
+#define IDC_INSTALL_WINGET				204
+#define IDC_DISABLE_SLEEP				205
 #define IDC_STATIC                      -1
 
 // Next default values for new objects

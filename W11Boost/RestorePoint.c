@@ -173,7 +173,7 @@ exit:
 void restorepoint_prep() {
   HKEY hKey = HKEY_LOCAL_MACHINE;
 
-  result = RegCreateKeyExW(
+  long result = RegCreateKeyExW(
       hKey, L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\SystemRestore", 0,
       NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hSubKey, NULL);
 
@@ -199,7 +199,7 @@ void restorepoint_prep() {
 void restorepoint_prep_revert() {
   HKEY hKey = HKEY_LOCAL_MACHINE;
 
-  result = RegCreateKeyExW(
+  long result = RegCreateKeyExW(
       hKey, L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\SystemRestore", 0,
       NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hSubKey, NULL);
 

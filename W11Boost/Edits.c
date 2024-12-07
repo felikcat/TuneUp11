@@ -3,21 +3,7 @@
 #include <stdlib.h>
 
 int gp_edits() {
-  // The apartment thread model is required for GPOs
-  HRESULT hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
-  if (FAILED(hr))
-    return EXIT_FAILURE;
-
-  //---- HKEY_LOCAL_MACHINE ----//
-  CoCreateInstance(&_CLSID_GroupPolicyObject, NULL, CLSCTX_INPROC_SERVER,
-                   &_IID_IGroupPolicyObject, (void **)&pGPO);
-
-  hr = pGPO->lpVtbl->OpenLocalMachineGPO(pGPO, GPO_OPEN_LOAD_REGISTRY);
-  if (FAILED(hr))
-    return EXIT_FAILURE;
-
-  hKey = HKEY_LOCAL_MACHINE;
-  pGPO->lpVtbl->GetRegistryKey(pGPO, GPO_SECTION_MACHINE, &hKey);
+  HRESULT hr = init_gp_object();
 
   // If allowed (1): unused apps would be uninstalled with their user data left
   // intact, then reinstalled if launched afterwards at any point in time.
@@ -223,18 +209,6 @@ int gp_edits() {
   set_dword(hKey, L"SOFTWARE\\Policies\\Microsoft\\Windows\\OOBE",
             L"DisablePrivacyExperience", 1);
 
-  //---- HKEY_CURRENT_USER ----//
-  gp_cleanup(hr);
-  CoCreateInstance(&_CLSID_GroupPolicyObject, NULL, CLSCTX_INPROC_SERVER,
-                   &_IID_IGroupPolicyObject, (LPVOID *)&pGPO);
-
-  hr = pGPO->lpVtbl->OpenLocalMachineGPO(pGPO, GPO_OPEN_LOAD_REGISTRY);
-  if (FAILED(hr))
-    return EXIT_FAILURE;
-
-  hKey = HKEY_CURRENT_USER;
-  pGPO->lpVtbl->GetRegistryKey(pGPO, GPO_SECTION_USER, &hKey);
-
   set_dword(hKey,
             L"Software\\Microsoft\\Windows\\CurrentVersion\\AdvertisingInfo",
             L"Enabled", 0);
@@ -274,9 +248,9 @@ int gp_edits() {
   set_dword(hKey, L"Software\\Microsoft\\VisualStudio\\Telemetry",
             L"TurnOffSwitch", 1);
 
-  gp_cleanup(hr);
-
+  
   //---- Outside of GPO ----//
+  gp_cleanup(hr);
 
   // [P2] Disable "Windows Error Reporting" service.
   remove_subkey(hKey,

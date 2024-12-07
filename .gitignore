@@ -2,3 +2,6 @@
 .vscode
 .cache
 build
+W11Boost/vcpkg_installed
+W11Boost/x64
+x64

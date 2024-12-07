@@ -2,20 +2,7 @@
 #include <GPEdit.h>
 
 int install_privacy_mode() {
-  // Apartment-threaded required for GPOs
-  HRESULT hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
-  if (FAILED(hr))
-    return EXIT_FAILURE;
-
-  CoCreateInstance(&_CLSID_GroupPolicyObject, NULL, CLSCTX_INPROC_SERVER,
-                   &_IID_IGroupPolicyObject, (LPVOID *)&pGPO);
-
-  hr = pGPO->lpVtbl->OpenLocalMachineGPO(pGPO, GPO_OPEN_LOAD_REGISTRY);
-  if (FAILED(hr))
-    return EXIT_FAILURE;
-
-  HKEY hKey = HKEY_LOCAL_MACHINE;
-  pGPO->lpVtbl->GetRegistryKey(pGPO, GPO_SECTION_MACHINE, &hKey);
+  HRESULT hr = init_gp_object(hKey);
 
   // Do not analyze apps' execution time data.
   set_dword(hKey, L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Perflib",
@@ -91,19 +78,6 @@ int install_privacy_mode() {
             L"PublishUserActivities", 0);
   set_dword(hKey, L"(SOFTWARE\\Policies\\Microsoft\\Windows\\System",
             L"UploadUserActivities", 0);
-
-  gp_cleanup(hr);
-
-  //---- HKEY_CURRENT_USER ----//
-  CoCreateInstance(&_CLSID_GroupPolicyObject, NULL, CLSCTX_INPROC_SERVER,
-                   &_IID_IGroupPolicyObject, (LPVOID *)&pGPO);
-
-  hr = pGPO->lpVtbl->OpenLocalMachineGPO(pGPO, GPO_OPEN_LOAD_REGISTRY);
-  if (FAILED(hr))
-    return EXIT_FAILURE;
-
-  hKey = HKEY_CURRENT_USER;
-  pGPO->lpVtbl->GetRegistryKey(pGPO, GPO_SECTION_USER, &hKey);
 
   // Do not search disks to attempt fixing a missing shortcut.
   set_dword(hKey,
